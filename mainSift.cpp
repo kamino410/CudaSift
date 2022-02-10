@@ -48,8 +48,8 @@ int main(int argc, char **argv) {
   CudaImage img1, img2;
   img1.Allocate(w, h, iAlignUp(w, 128), false, NULL, (float *)limg.data);
   img2.Allocate(w, h, iAlignUp(w, 128), false, NULL, (float *)rimg.data);
-  img1.Download();
-  img2.Download();
+  img1.CopyToDevice();
+  img2.CopyToDevice();
 
   // Extract Sift features from images
   SiftData siftData1, siftData2;
@@ -61,10 +61,10 @@ int main(int argc, char **argv) {
   // A bit of benchmarking
   // for (int thresh1=1.00f;thresh1<=4.01f;thresh1+=0.50f) {
   float *memoryTmp = AllocSiftTempMemory(w, h, 5, false);
-  for (int i = 0; i < 1000; i++) {
-    ExtractSift(siftData1, img1, 5, initBlur, thresh, 0.0f, false, memoryTmp);
-    ExtractSift(siftData2, img2, 5, initBlur, thresh, 0.0f, false, memoryTmp);
-  }
+  // for (int i = 0; i < 1000; i++) {
+  ExtractSift(siftData1, img1, 5, initBlur, thresh, 0.0f, false, memoryTmp);
+  ExtractSift(siftData2, img2, 5, initBlur, thresh, 0.0f, false, memoryTmp);
+  //}
   FreeSiftTempMemory(memoryTmp);
 
   // Match Sift features and find a homography

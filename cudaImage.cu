@@ -50,7 +50,7 @@ CudaImage::~CudaImage() {
   t_data = NULL;
 }
 
-double CudaImage::Download() {
+double CudaImage::CopyToDevice() {
   TimerGPU timer(0);
   int p = sizeof(float) * pitch;
   if (d_data != NULL && h_data != NULL)
@@ -63,7 +63,7 @@ double CudaImage::Download() {
   return gpuTime;
 }
 
-double CudaImage::Readback() {
+double CudaImage::CopyToHost() {
   TimerGPU timer(0);
   int p = sizeof(float) * pitch;
   safeCall(cudaMemcpy2D(h_data, sizeof(float) * width, d_data, p, sizeof(float) * width, height,

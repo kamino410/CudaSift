@@ -20,8 +20,8 @@ public:
   ~CudaImage();
   void Allocate(int width, int height, int pitch, bool withHost, float *devMem = NULL,
                 float *hostMem = NULL);
-  double Download();
-  double Readback();
+  double CopyToDevice();
+  double CopyToHost();
   double InitTexture();
   double CopyToTexture(CudaImage &dst, bool host);
 };
