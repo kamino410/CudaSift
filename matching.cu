@@ -940,7 +940,7 @@ __global__ void TestHomographies(float *d_coord, float *d_homo, int *d_counts, i
 //================= Host matching functions =====================//
 
 double FindHomography(SiftData &data, float *homography, int *numMatches, int numLoops,
-                      float minScore, float maxAmbiguity, float thresh) {
+                      float minScore, float maxAmbiguity, float thresh, bool verbose) {
   *numMatches = 0;
   homography[0] = homography[4] = homography[8] = 1.0f;
   homography[1] = homography[2] = homography[3] = 0.0f;
@@ -1026,13 +1026,11 @@ double FindHomography(SiftData &data, float *homography, int *numMatches, int nu
   safeCall(cudaFree(d_randPts));
   safeCall(cudaFree(d_coord));
   double gpuTime = timer.read();
-#ifdef VERBOSE
-  printf("FindHomography time =         %.2f ms\n", gpuTime);
-#endif
+  if (verbose) { printf("FindHomography time =         %.2f ms\n", gpuTime); }
   return gpuTime;
 }
 
-double MatchSiftData(SiftData &data1, SiftData &data2) {
+double MatchSiftData(SiftData &data1, SiftData &data2, bool verbose) {
   TimerGPU timer(0);
   int numPts1 = data1.numPts;
   int numPts2 = data2.numPts;
@@ -1142,9 +1140,7 @@ double MatchSiftData(SiftData &data1, SiftData &data2) {
   }
 
   double gpuTime = timer.read();
-#ifndef VERBOSE
-  printf("MatchSiftData time =          %.2f ms\n", gpuTime);
-#endif
+  if (verbose) { printf("MatchSiftData time =          %.2f ms\n", gpuTime); }
   return gpuTime;
 }
 

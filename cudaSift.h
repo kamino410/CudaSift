@@ -32,16 +32,19 @@ typedef struct {
 #endif
 } SiftData;
 
-void InitCuda(int devNum = 0);
-float *AllocSiftTempMemory(int width, int height, int numOctaves, bool scaleUp = false);
+void InitCuda(int devNum = 0, bool verbose = false);
+float *AllocSiftTempMemory(int width, int height, int numOctaves, bool scaleUp = false,
+                           bool verbose = false);
 void FreeSiftTempMemory(float *memoryTmp);
 void ExtractSift(SiftData &siftData, CudaImage &img, int numOctaves, double initBlur, float thresh,
-                 float lowestScale = 0.0f, bool scaleUp = false, float *tempMemory = 0);
+                 float lowestScale = 0.0f, bool scaleUp = false, float *tempMemory = 0,
+                 bool verbose = false);
 void InitSiftData(SiftData &data, int num = 1024, bool host = false, bool dev = true);
 void FreeSiftData(SiftData &data);
 void PrintSiftData(SiftData &data);
-double MatchSiftData(SiftData &data1, SiftData &data2);
+double MatchSiftData(SiftData &data1, SiftData &data2, bool verbose = false);
 double FindHomography(SiftData &data, float *homography, int *numMatches, int numLoops = 1000,
-                      float minScore = 0.85f, float maxAmbiguity = 0.95f, float thresh = 5.0f);
+                      float minScore = 0.85f, float maxAmbiguity = 0.95f, float thresh = 5.0f,
+                      bool verbose = false);
 
 #endif

@@ -50,44 +50,38 @@ CudaImage::~CudaImage() {
   t_data = NULL;
 }
 
-double CudaImage::CopyToDevice() {
+double CudaImage::CopyToDevice(bool verbose) {
   TimerGPU timer(0);
   int p = sizeof(float) * pitch;
   if (d_data != NULL && h_data != NULL)
     safeCall(cudaMemcpy2D(d_data, p, h_data, sizeof(float) * width, sizeof(float) * width, height,
                           cudaMemcpyHostToDevice));
   double gpuTime = timer.read();
-#ifdef VERBOSE
-  printf("Download time =               %.2f ms\n", gpuTime);
-#endif
+  if (verbose) printf("Download time =               %.2f ms\n", gpuTime);
   return gpuTime;
 }
 
-double CudaImage::CopyToHost() {
+double CudaImage::CopyToHost(bool verbose) {
   TimerGPU timer(0);
   int p = sizeof(float) * pitch;
   safeCall(cudaMemcpy2D(h_data, sizeof(float) * width, d_data, p, sizeof(float) * width, height,
                         cudaMemcpyDeviceToHost));
   double gpuTime = timer.read();
-#ifdef VERBOSE
-  printf("Readback time =               %.2f ms\n", gpuTime);
-#endif
+  if (verbose) printf("Readback time =               %.2f ms\n", gpuTime);
   return gpuTime;
 }
 
-double CudaImage::InitTexture() {
+double CudaImage::InitTexture(bool verbose) {
   TimerGPU timer(0);
   cudaChannelFormatDesc t_desc = cudaCreateChannelDesc<float>();
   safeCall(cudaMallocArray((cudaArray **)&t_data, &t_desc, pitch, height));
   if (t_data == NULL) printf("Failed to allocated texture data\n");
   double gpuTime = timer.read();
-#ifdef VERBOSE
-  printf("InitTexture time =            %.2f ms\n", gpuTime);
-#endif
+  if (verbose) printf("InitTexture time =            %.2f ms\n", gpuTime);
   return gpuTime;
 }
 
-double CudaImage::CopyToTexture(CudaImage &dst, bool host) {
+double CudaImage::CopyToTexture(CudaImage &dst, bool host, bool verbose) {
   if (dst.t_data == NULL) {
     printf("Error CopyToTexture: No texture data\n");
     return 0.0;
@@ -105,8 +99,6 @@ double CudaImage::CopyToTexture(CudaImage &dst, bool host) {
                                  sizeof(float) * pitch, dst.height, cudaMemcpyDeviceToDevice));
   safeCall(cudaDeviceSynchronize());
   double gpuTime = timer.read();
-#ifdef VERBOSE
-  printf("CopyToTexture time =          %.2f ms\n", gpuTime);
-#endif
+  if (verbose) printf("CopyToTexture time =          %.2f ms\n", gpuTime);
   return gpuTime;
 }

@@ -20,10 +20,10 @@ public:
   ~CudaImage();
   void Allocate(int width, int height, int pitch, bool withHost, float *devMem = NULL,
                 float *hostMem = NULL);
-  double CopyToDevice();
-  double CopyToHost();
-  double InitTexture();
-  double CopyToTexture(CudaImage &dst, bool host);
+  double CopyToDevice(bool verbose = false);
+  double CopyToHost(bool verbose = false);
+  double InitTexture(bool verbose = false);
+  double CopyToTexture(CudaImage &dst, bool host, bool verbose = false);
 };
 
 int iDivUp(int a, int b);
