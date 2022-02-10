@@ -12,6 +12,7 @@ set(CPACK_GENERATOR "ZIP")
 include(CPack)
 
 find_package(OpenCV REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(CUDA)
 if (NOT CUDA_FOUND)
   message(STATUS "CUDA not found. Project will not be built.")
@@ -49,6 +50,7 @@ set(sources
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${EIGEN3_INCLUDE_DIRS}
 )
 
 #SET(CUDA_SEPARABLE_COMPILATION ON)
