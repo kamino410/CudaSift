@@ -11,7 +11,8 @@ set(CPACK_PACKAGE_VERSION_PATCH "${cudaSift_VERSION_PATCH}")
 set(CPACK_GENERATOR "ZIP")
 include(CPack)
 
-find_package(OpenCV REQUIRED)
+option(CUDASIFT_BUILD_SAMPLE "" OFF)
+
 find_package(Eigen3 REQUIRED)
 find_package(CUDA)
 if (NOT CUDA_FOUND)
@@ -34,38 +35,27 @@ endif()
 
 set(cuda_sources
   cudaImage.cu
-  cudaImage.h
   cudaSiftH.cu
-  cudaSiftH.h
   matching.cu
-  cudaSiftD.h
-  cudaSift.h
-  cudautils.h
 )
-
-set(sources
-  geomFuncs.cpp
-  mainSift.cpp
-)
-
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${EIGEN3_INCLUDE_DIRS}
-)
-
-#SET(CUDA_SEPARABLE_COMPILATION ON)
-
-cuda_add_executable(cudasift ${cuda_sources} ${sources} OPTIONS -arch=sm_35)
-
-#cuda_add_executable(l2net l2netD.cu OPTIONS -arch=sm_35)
-
+cuda_add_library(cudasift ${cuda_sources} OPTIONS -arch=sm_35)
 set_target_properties(cudasift PROPERTIES
   COMPILE_FLAGS "${EXTRA_CXX_FLAGS}"
 )
+target_include_directories(cudasift PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(cudasift PRIVATE ${EIGEN3_INCLUDE_DIRS})
+target_link_libraries(cudasift ${CUDA_cudadevrt_LIBRARY})
 
-target_link_libraries(cudasift ${CUDA_cudadevrt_LIBRARY} ${OpenCV_LIBS})
-#  /usr/local/cuda/lib64/libcudadevrt.a ${OpenCV_LIBS}
-#)
+if(${BUILD_SAMPLE})
+  find_package(OpenCV REQUIRED)
+
+  set(sources
+    geomFuncs.cpp
+    mainSift.cpp
+  )
+  add_executable(sample ${sources})
+  target_link_libraries(sample cudasift ${CUDA_cudadevrt_LIBRARY} ${OpenCV_LIBS})
+endif()
 
 install(FILES
   ${cuda_sources}
